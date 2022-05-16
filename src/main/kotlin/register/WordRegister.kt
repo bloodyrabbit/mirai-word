@@ -16,6 +16,9 @@ fun WordRegister() {
     GlobalEventChannel.subscribeMessages {
         // 添加指令
         startsWith(QuestionConfig.ADD_COMMAND) {
+            if (!MiraiWord.checkAdminPermission(sender))
+                return@startsWith
+
             val str = it.split(Regex("""\s+"""))
 
             if (str.size == 2){
@@ -28,11 +31,17 @@ fun WordRegister() {
 
         // 删除指令
         startsWith(QuestionConfig.DEL_COMMAND) {
+            if (!MiraiWord.checkAdminPermission(sender))
+                return@startsWith
+
             subject.sendMessage("成功删除${delquestion(it)}条问答")
         }
 
         // 删除指令，通过ID
         startsWith(QuestionConfig.DEL_ID_COMMAND) {
+            if (!MiraiWord.checkAdminPermission(sender))
+                return@startsWith
+
             if(delidquestion(it.toInt())==1)
                 subject.sendMessage("成功删除编号${it}的问答")
             else
@@ -41,7 +50,10 @@ fun WordRegister() {
 
         // 遍历指令，输出所有的指令
         startsWith(QuestionConfig.List_COMMAND) {
-            var string:String = ""
+            if (!MiraiWord.checkAdminPermission(sender))
+                return@startsWith
+
+            var string = ""
             var i = 0
             listquestion().forEach {
                 string += "ID: " + it[Question.id] + " 问: " + it[Question.question] + " 答: " + it[Question.answer]+ "\n"

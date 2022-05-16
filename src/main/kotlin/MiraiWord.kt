@@ -5,8 +5,15 @@ import com.zaxxer.hikari.HikariDataSource
 import moe.ruabbit.Dao.Question
 import moe.ruabbit.config.QuestionConfig
 import moe.ruabbit.register.WordRegister
+import net.mamoe.mirai.console.permission.Permission
+import net.mamoe.mirai.console.permission.PermissionId
+import net.mamoe.mirai.console.permission.PermissionService
+import net.mamoe.mirai.console.permission.PermissionService.Companion.hasPermission
+import net.mamoe.mirai.console.permission.PermitteeId.Companion.permitteeId
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.console.plugin.name
+import net.mamoe.mirai.contact.User
 import net.mamoe.mirai.utils.error
 import net.mamoe.mirai.utils.info
 import org.jetbrains.exposed.sql.Database
@@ -23,6 +30,7 @@ object MiraiWord : KotlinPlugin(
         author("ruabbit")
     }
 ) {
+    private lateinit var adminPermission: Permission
     override fun onEnable() {
         logger.info { "DICE插件加载中" }
 
@@ -55,7 +63,21 @@ object MiraiWord : KotlinPlugin(
             SchemaUtils.create(Question)
         }
 
+        // 注册权限
+        adminPermission = PermissionService.INSTANCE.register(
+            PermissionId(name, "admin"),
+            "管理员权限"
+        )
+
         // 问答库注册
         WordRegister()
     }
+
+    /**
+     * 权限检查，这是一个模仿我的世界的权限系统制作的
+     */
+    fun checkAdminPermission(sender: User): Boolean {
+        return sender.permitteeId.hasPermission(adminPermission)
+    }
+
 }
