@@ -118,8 +118,6 @@ run/
 !gradle-wrapper.jar
 
 
-# Local Test Launch point
-src/test/kotlin/RunTerminal.kt
 
 # Mirai console files with direct bootstrap
 /config
